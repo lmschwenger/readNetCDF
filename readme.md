@@ -1,8 +1,8 @@
 # Readme for read_nc.py
 
 ## Requirements
- - Scipy (version 1.9.0 used)
- - pandas (v 1.4.3 used)
+ - Scipy (v1.9.0 used)
+ - pandas (v1.4.3 used)
 
 see requirements.txt
 
