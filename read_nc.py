@@ -9,10 +9,9 @@ from scipy import io
 import pandas as pd
 import os
 
-print("Choose file to extract XYZ data from: ")
+
 
 #Retrieving absolute path of this file and setting it to current directory.
-
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
@@ -21,23 +20,20 @@ os.chdir(dname)
 nc_filepath = os.path.join(os.getcwd()+'/nc_files')
 # Setting output filepath
 xyz_filepath = os.path.join(os.getcwd()+'/xyz_files')
-
 #Creating dict of filenames in input path.
 fileList_dict = {str(idx):file for idx,file in enumerate(os.listdir(nc_filepath))}
 
+print("[PROMPT] Choose file to extract XYZ data from: ")
 for idx in fileList_dict:
     #Printing each filename in the filepath
     print('[%s] %s' % (idx, fileList_dict[idx]))
-
+    
 print("")
 print('[%d] All' % (len(fileList_dict)))
 
 #User chooses which of the files to retrieve XYZ from. All is an option.
-choice = input("Choose option: ")
+choice = input("[PROMPT] Choose option: ")
 
-#Setting convert_all depending on user choice
-if choice == len(fileList_dict):
-    convert_all = 1
 
 #Creating folder for converted files
 if not os.path.isdir(dname+'/xyz_files'):
@@ -55,9 +51,10 @@ def sameNumVariables(x, y, z):
 
 
 def extract_xyz(filepath):
-    print("[INFO] LOADING FIRST FILE ...")
     
+    print("[INFO] LOADING FIRST FILE ...")
     data = io.netcdf_file(filepath, mode='r')
+    
     #Retrieving filename without .filetype extension.
     filename = os.path.basename(filepath).split('.')[0]
     print("[INFO] FILE: %s" % filename)
@@ -78,9 +75,10 @@ def extract_xyz(filepath):
             print("")
             print("[ERROR] %s not a variable in the data..." % x_key)
             print("[INFO] List of variables: ")
+            
             # Prompts user to type in a desired key for the X-data
             print([variable for variable in data.variables.keys()])
-            x_key = input("Choose new X var: ")
+            x_key = input("[PROMPT] Choose new X var: ")
             
     invalidKey = 1    
     while invalidKey:
@@ -91,47 +89,58 @@ def extract_xyz(filepath):
             print("")
             print("[ERROR] %s not a variable in the data..." % y_key)
             print("[INFO] List of variables: ")
+            
             # Prints list of valid variable keys to choose
             print([variable for variable in data.variables.keys()])
+            
             # Prompts user to type in a desired key for the Y-data
-            y_key = input("Choose new Y var: ")   
+            y_key = input("[PROMPT] Choose new Y var: ")   
     
     invalidKey = 1
     while invalidKey:
         try:
             z = data.variables[z_key][:].copy()
             invalidKey = 0
+            
         except KeyError:
             print("")
             print("[ERROR] %s not a variable in the data..." % z_key)
             print("[INFO] List of variables: ")
+            
             # Prints list of valid variable keys to choose
             print([variable for variable in data.variables.keys()])
+            
             # Prompts user to type in a desired key for the Z-data
-            z_key = input("Choose new Z var: ")
+            z_key = input("[PROMPT] Choose new Z var: ")
     
 
     #Checking if X, Y and Z are of equal length
     varListEqualLength = sameNumVariables(x, y, z)
     if varListEqualLength:
+
         #Creating dataframe
         df = pd.DataFrame(list(zip(x, y, z)), columns=[x_key, y_key, z_key])
+        
         #Exporting values to csv file
         df.to_csv(xyz_filepath + '/' + filename + '_xyz.csv', index=False)  
         print("====================================")
         print("[SUCCES] %s_xyz.csv printed to %s" % (filename, xyz_filepath))
         print("====================================")
+        
     else:
         print("[ERROR] List of variables for export are not equal length ... Values were not exported")  
         print("   X: %d values" % len(x))  
         print("   Y: %d values" % len(y))  
         print("   Z: %d values" % len(z))
+
         
+
+# Perform extraction task based on file-prompt.
 if int(choice) < len(fileList_dict):
     extract_xyz(os.path.join('%s/%s' % (nc_filepath, fileList_dict[choice]) 
                               ) 
                 )
-elif int(choice) >= len(fileList_dict):
+elif int(choice) >= len(fileList_dict): #Performs extraction on all files in nc_files/
     [extract_xyz(os.path.join('%s/%s' % (nc_filepath, fileList_dict[str(idx)]))) for idx in range(0, len(fileList_dict))]
 
     
