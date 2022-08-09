@@ -1,7 +1,10 @@
 # Readme for read_nc.py
 
+## Requirements
+ - Scipy (version 1.9.0 used)
+ - pandas (v 1.4.3 used)
 
-### Requires libraries pandas and scipy ###
+see requirements.txt
 
 ## Directory structure
 Place read_nc.py in a directory containing a folder named "nc_files". Basically keep the structure as shown in the repository above.
