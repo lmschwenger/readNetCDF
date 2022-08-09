@@ -1,11 +1,11 @@
-Readme for read_nc.py
+# Readme for read_nc.py
 
 
 ### Requires libraries pandas and scipy ###
 
-## Place read_nc.py in a directory containing a folder named "nc_files" (see tree below)
+### Place read_nc.py in a directory containing a folder named "nc_files" (see tree below)
 
-Directory:
+## Directory structure:
 │   readme.txt
 │   read_nc.py
 │
@@ -23,7 +23,7 @@ Directory:
         madis-hydro_xyz.csv
 
 
-Processed files are written to /xyz_files/
+### Processed files are written to /xyz_files/
 
 ## change dir
 cd /d path/to/read_nc.py
