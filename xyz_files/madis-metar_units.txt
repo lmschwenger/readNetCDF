@@ -1,0 +1,4 @@
+Variable,Unit
+latitude,degree_north
+longitude,degree_east
+latitude,degree_north
