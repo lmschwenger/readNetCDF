@@ -1,7 +1,7 @@
 # Readme for read_nc.py
 
 ## Requirements
- - Scipy (v1.9.0 used)
+ - netCDF4 (v1.6.0 used)
  - pandas (v1.4.3 used)
 
 see requirements.txt
