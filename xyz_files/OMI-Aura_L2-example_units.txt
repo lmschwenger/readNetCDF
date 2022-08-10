@@ -1,0 +1,4 @@
+Variable,Unit
+AerosolOpticalThickness,1
+CloudPressure,hPa
+ColumnAmountO3,DU

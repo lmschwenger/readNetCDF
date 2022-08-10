@@ -5,7 +5,7 @@ Created on Tue Aug  9 18:26:51 2022
 @author: lasse
 """
 #Importing necessary libraries
-from scipy import io
+import netCDF4 as nc
 import pandas as pd
 import os
 
@@ -53,16 +53,16 @@ def sameNumVariables(x, y, z):
 def extract_xyz(filepath):
     
     print("[INFO] LOADING FIRST FILE ...")
-    data = io.netcdf_file(filepath, mode='r')
+    data = nc.Dataset(filepath, mode='r')
     
     #Retrieving filename without .filetype extension.
     filename = os.path.basename(filepath).split('.')[0]
     print("[INFO] FILE: %s" % filename)
     
     #setting default keys for x, y and z
-    x_key = 'lat'
-    y_key = 'lon'
-    z_key = 'lat'
+    x_key = 'latitude'
+    y_key = 'longitude'
+    z_key = 'latitude'
     
     #Creating while loop that runs until a valid key is chosen for x, y and z data.
     
@@ -113,18 +113,26 @@ def extract_xyz(filepath):
             # Prompts user to type in a desired key for the Z-data
             z_key = input("[PROMPT] Choose new Z var: ")
     
-
+    
     #Checking if X, Y and Z are of equal length
     varListEqualLength = sameNumVariables(x, y, z)
     if varListEqualLength:
 
         #Creating dataframe
         df = pd.DataFrame(list(zip(x, y, z)), columns=[x_key, y_key, z_key])
-        
         #Exporting values to csv file
-        df.to_csv(xyz_filepath + '/' + filename + '_xyz.csv', index=False)  
+        df.to_csv(xyz_filepath + '/' + filename + '_xyz.csv', index=False)
+        
+        #Creating .txt file with units of the exported data.
+        with open(xyz_filepath + '/' + filename + '_units.txt', 'w') as writer:
+            writer.write('Variable,Unit\n')   
+            writer.write('%s,%s\n%s,%s\n%s,%s\n' % (x_key, data.variables[x_key].units, 
+                                                  y_key, data.variables[y_key].units, 
+                                                  z_key, data.variables[z_key].units))
+        writer.close()
         print("====================================")
         print("[SUCCES] %s_xyz.csv printed to %s" % (filename, xyz_filepath))
+        print("[SUCCES] %s_units.csv printed to %s" % (filename, xyz_filepath))
         print("====================================")
         
     else:
@@ -132,8 +140,8 @@ def extract_xyz(filepath):
         print("   X: %d values" % len(x))  
         print("   Y: %d values" % len(y))  
         print("   Z: %d values" % len(z))
-
-        
+    #Closing file
+    data.close()        
 
 # Perform extraction task based on file-prompt.
 if int(choice) < len(fileList_dict):
