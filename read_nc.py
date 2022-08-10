@@ -52,7 +52,12 @@ def invalidKeyMsg(key):
     print("[ERROR] %s not a variable in the data..." % key)
     print("[INFO] List of variables: ")
     
-
+def getUnit(data, key):
+    """ Unit retrieved through function to catch eventual error with API call. """
+    try:
+        return data.variables[key].units
+    except AttributeError:
+        return data.variables[key].unit
 def extract_xyz(filepath):
     
     print("[INFO] LOADING FILE ...")
@@ -114,12 +119,14 @@ def extract_xyz(filepath):
         df = pd.DataFrame(list(zip(x, y, z)), columns=[x_key, y_key, z_key])
         #Exporting values to csv file
         df.to_csv(xyz_filepath + '/' + filename + '_xyz.csv', index=False)
+        #Retrieving units for XYZ.
+        unit_x, unit_y, unit_z = getUnit(data, x_key), getUnit(data, y_key), getUnit(data, z_key)
         #Creating .txt file with units of the exported data.
         with open(xyz_filepath + '/' + filename + '_units.txt', 'w') as writer:
             writer.write('Variable,Unit\n')   
-            writer.write('%s,%s\n%s,%s\n%s,%s\n' % (x_key, data.variables[x_key].units, 
-                                                  y_key, data.variables[y_key].units, 
-                                                  z_key, data.variables[z_key].units))
+            writer.write('%s,%s\n%s,%s\n%s,%s\n' % (x_key, unit_x, 
+                                                  y_key, unit_y, 
+                                                  z_key, unit_z))
         writer.close()
         print("====================================")
         print("[SUCCES] %s_xyz.csv printed to %s" % (filename, xyz_filepath))
